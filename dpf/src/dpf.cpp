@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
-namespace dpfSubFuns {
+
 arma::uvec SampleNoReplace(arma::uvec x, int size) {
   int nOrig = x.size();
   arma::uvec index(size);
@@ -31,8 +31,9 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
   ws.elem( arma::find( ws < tol) ).zeros();
   // ws = arma::normalise(ws,1);
   // Rcout << "ws = " << std::endl << ws << std::endl;
-  arma::uword nz = arma::accu(arma::find(ws));          //MICHAEL: summing indeces?
-  if(M <= N || nz <= N){                       //MICHAEL: should nz be the number of non-zero ws?
+  arma::vec nzz = arma::nonzeros(ws);
+  arma::uword nz = nzz.n_elem;
+  if(M <= N || nz <= N){
     return ws;
   }
   
@@ -56,7 +57,7 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
     double p = 1.0 / tt;
     probs.fill(p);                                    //MICHAEL: probs is never used?
     int dontneed = tt - (N - nkeep);
-    arma::uvec idx = dpfSubFuns::SampleNoReplace(ties, dontneed);
+    arma::uvec idx = SampleNoReplace(ties, dontneed);
     ws.elem(idx).zeros();
   }
   ws = arma::normalise(ws,1);    //MICHAEL: Why L1 norm?
@@ -74,9 +75,10 @@ arma::colvec resampleOptimal(arma::colvec w, int N){
   ws.elem( arma::find( ws < tol) ).zeros();
   // ws = arma::normalise(ws,1);
   // Rcout << "ws = " << std::endl << ws << std::endl;
-  arma::uword nz = arma::accu(arma::find(ws));            //MICHAEL: summing indices?
+  arma::vec nzz = arma::nonzeros(ws);
+  arma::uword nz = nzz.n_elem;
   if(M <= N || nz <= N){ 
-    return ws;                                            //MICHAEL: should nz be the number of non-zero ws?
+    return ws;
   }
   
   // Hard case.
@@ -203,7 +205,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,
   // Rcout << "finished preallocation" << std::endl;
   for(int part=0; part < npart; part++){
     for(int k=0;  k < K; k++){
-      List kfout = dpfSubFuns::kf1step(a0.col(part), P0.col(part), dt.col(k), ct.col(k),
+      List kfout = kf1step(a0.col(part), P0.col(part), dt.col(k), ct.col(k),
                                        Tt.col(k), Zt.col(k), HHt.col(k), GGt.col(k),
                                        yt);
       // Rcout << "did first kf step" << std::endl;
@@ -229,7 +231,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,
   w = arma::vectorise(lik);
   w = arma::normalise(w,1);
   // Rcout << "w = "<< std::endl << w << std::endl;
-  w = dpfSubFuns::resampleSubOptimal(w, N);
+  w = resampleSubOptimal(w, N);
   // Rcout << "resampled weights" << std::endl;
   // Rcout << "w = "<< std::endl << w << std::endl;
   if( !arma::any(w)) return List::create(Named("BadPars") = 1);
@@ -267,7 +269,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,
                       Named("newstates") = newstates,
                       Named("newW") = newW);
 }
-}
+
 
 
 // [[Rcpp::export]]
@@ -316,7 +318,7 @@ double getloglike(List pmats, arma::uvec path, arma::mat y){
       Q.reshape(m,m);
       HHt = R * Q * R.t();
     }
-    List step = dpfSubFuns::kf1step(aa0, PP0, dt.subcube(0,s,iter*dtvar,arma::size(m,1,1)),
+    List step = kf1step(aa0, PP0, dt.subcube(0,s,iter*dtvar,arma::size(m,1,1)),
                                     ct.subcube(0,s,iter*ctvar,arma::size(d,1,1)), 
                                     Tt.subcube(0,s,iter*Ttvar,arma::size(mm,1,1)),
                                     Zt.subcube(0,s,iter*Ztvar,arma::size(dm,1,1)), 
@@ -467,10 +469,10 @@ List beamSearch(arma::mat a0, arma::mat P0, arma::vec w0,
     // Rcout << "iter = " << iter << std::endl;
     // Rcout << "a0 size = " << a0.size() << std::endl;
     if(iter==0 || Rtvar || Qtvar){ 
-      HHt = dpfSubFuns::HHcreate(Rt.slice(iter * Rtvar), Qt.slice(iter * Qtvar), m, q);
+      HHt = HHcreate(Rt.slice(iter * Rtvar), Qt.slice(iter * Qtvar), m, q);
     }
     // Rcout << "HHt done " << std::endl;
-    List step = dpfSubFuns::dpf(particles.head(CurrentPartNum), weights.head(CurrentPartNum), 
+    List step = dpf(particles.head(CurrentPartNum), weights.head(CurrentPartNum), 
                                 maxpart, transProbs, 
                                 a0.head_cols(CurrentPartNum), P0.head_cols(CurrentPartNum),
                                 dt.slice(iter * dtvar), ct.slice(iter * ctvar), 
