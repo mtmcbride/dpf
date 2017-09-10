@@ -13,19 +13,3 @@ beamSearch <- function(a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, 
     .Call('dpf_beamSearch', PACKAGE = 'dpf', a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, N)
 }
 
-rcpparma_hello_world <- function() {
-    .Call('dpf_rcpparma_hello_world', PACKAGE = 'dpf')
-}
-
-rcpparma_outerproduct <- function(x) {
-    .Call('dpf_rcpparma_outerproduct', PACKAGE = 'dpf', x)
-}
-
-rcpparma_innerproduct <- function(x) {
-    .Call('dpf_rcpparma_innerproduct', PACKAGE = 'dpf', x)
-}
-
-rcpparma_bothproducts <- function(x) {
-    .Call('dpf_rcpparma_bothproducts', PACKAGE = 'dpf', x)
-}
-
