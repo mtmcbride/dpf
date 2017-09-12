@@ -22,6 +22,7 @@ arma::uvec SampleNoReplace(arma::uvec x, int size) {
   return(ret);
 }
 
+//[[Rcpp::export]]
 arma::vec resampleSubOptimal(arma::vec w, int N){
   int M = w.size();
   double tol = 1e-10;
@@ -64,7 +65,7 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
   return ws;
 }
 
-
+//[[Rcpp::export]]
 arma::colvec resampleOptimal(arma::colvec w, int N){
   // no zeros no dups?? unused, doesn't seem to work
   int M = w.size();

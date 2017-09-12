@@ -6,6 +6,30 @@
 
 using namespace Rcpp;
 
+// resampleSubOptimal
+arma::vec resampleSubOptimal(arma::vec w, int N);
+RcppExport SEXP dpf_resampleSubOptimal(SEXP wSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(resampleSubOptimal(w, N));
+    return rcpp_result_gen;
+END_RCPP
+}
+// resampleOptimal
+arma::colvec resampleOptimal(arma::colvec w, int N);
+RcppExport SEXP dpf_resampleOptimal(SEXP wSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::colvec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(resampleOptimal(w, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getloglike
 double getloglike(List pmats, arma::uvec path, arma::mat y);
 RcppExport SEXP dpf_getloglike(SEXP pmatsSEXP, SEXP pathSEXP, SEXP ySEXP) {
