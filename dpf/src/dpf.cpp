@@ -186,7 +186,7 @@ arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q){
   return(HHt);
 }
 
-List dpf(arma::uvec currentStates, arma::colvec w, int N,
+List dpf(arma::uvec currentStates, arma::colvec w, int N,                      //MICHAEL: What are these?
          arma::mat transProbs,
          arma::mat a0, arma::mat P0,
          arma::mat dt, arma::mat ct, arma::mat Tt, arma::mat Zt,
