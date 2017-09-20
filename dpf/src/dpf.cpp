@@ -186,6 +186,19 @@ arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q){
   return(HHt);
 }
 
+//currentStates: vector of the current discrete state for each particle
+//w: resampling weight for each particle
+//N: max number of particles
+//transProbs: matrix of transition probabilities for the discrete states
+//a0: estimated means of the current continous state for each particle
+//P0: estimated variances of the continous state for each particle
+//dt: continuous state intercept
+//ct: observation (yt) intercept
+//Tt: continous state slope
+//Zt: observation (yt) slope
+//HHt: estimated variance of the predicted mean of the continuous state?
+//GGt: variance of the observation
+//yt: observation
 List dpf(arma::uvec currentStates, arma::colvec w, int N,                      //MICHAEL: What are these?
          arma::mat transProbs,
          arma::mat a0, arma::mat P0,
