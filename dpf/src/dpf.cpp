@@ -192,7 +192,7 @@ arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q){
 //transProbs: matrix of transition probabilities for the discrete states
 //a0: estimated means of the current continous state for each particle
 //P0: estimated variances of the continous state for each particle
-//dt: continuous state intercept
+//dt: continuous state intercept. each column is an intercept
 //ct: observation (yt) intercept
 //Tt: continous state slope
 //Zt: observation (yt) slope
