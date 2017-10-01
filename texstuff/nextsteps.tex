@@ -1,0 +1,433 @@
+\documentclass[11pt]{article}
+
+% Include statements
+\usepackage{graphicx}
+\usepackage{amsfonts,amssymb,amsmath,amsthm}
+\usepackage[numbers,square,sort]{natbib}
+\usepackage[left=1in,top=1in,right=1in,bottom=1in,nohead]{geometry}
+\usepackage{pdfsync}
+\usepackage{hyperref}
+\hypersetup{backref,colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue}
+\usepackage{algorithm,algorithmic}
+\def\algorithmautorefname{Algorithm}
+
+
+\usepackage[showonlyrefs]{mathtools}
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{fit,arrows,automata}					% fitting shapes to coordinates
+\usetikzlibrary{backgrounds}
+%\usepackage{autonum}
+
+
+% Bibliography
+
+\renewcommand*{\figureautorefname}{Figure}%
+\renewcommand*{\tableautorefname}{Table}%
+\renewcommand*{\partautorefname}{Part}%
+\renewcommand*{\chapterautorefname}{Chapter}%
+\renewcommand*{\sectionautorefname}{Section}%
+\renewcommand*{\subsectionautorefname}{Section}%
+\renewcommand*{\subsubsectionautorefname}{Section}% 
+
+
+% Macros
+\newcommand{\Year}[2]{\parbox[t]{2mm}{\multirow{#2}{*}{\rotatebox[origin=c]{90}{\bf
+        #1}}}}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Sig}{\boldsymbol{\Sigma}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\Proj}{\boldsymbol{\Pi}}
+\newcommand{\A}{\mathbf{A}}
+%\renewcommand{\S}{\mathcal{S}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\PP}{\mathcal{P}}
+\newcommand{\Expect}[1]{\E\left[#1\right]}
+\newcommand{\nik}[2]{\mathcal{N}_q(#1,#2)}
+\newcommand{\nikol}{\nik{\beta}{C}}
+\newcommand{\nikola}[1]{\mathcal{N}_#1(\beta,C)}
+\newcommand{\given}{\mbox{ }\vert\mbox{ }}
+\renewcommand{\hat}{\widehat}
+\newcommand{\tr}{\textrm{tr}}
+\renewcommand{\tilde}{\widetilde}
+\newcommand{\ProjQ}{\Proj_{\mathbf{Q}}}
+\newcommand{\TrueMeasure}{\nu}
+\newcommand{\RademacherVariable}{\xi}
+\newcommand{\RademacherComplexity}{\mathfrak{R}}
+\newcommand{\LawOf}[1]{\mathcal{L}\left( #1 \right)}
+\newcommand{\Expectwrt}[2]{\mathbb{E}_{ #1 }\left[ #2 \right]}
+\newcommand{\ghost}{\widetilde{Z}}
+\usepackage{xspace}
+\makeatletter
+\newcommand*{\iid}{%
+    \@ifnextchar{.}%
+        {i.i.d.}%
+        {i.i.d.\@\xspace}%
+}
+\makeatother
+
+
+
+\newtheorem{result}{Result}
+\newtheorem{theorem}{Theorem}[result]
+\renewcommand*{\sectionautorefname}{Section}%
+
+\renewcommand{\P}{\mathbb{P}}
+\DeclareMathOperator*{\argmax}{argmax}
+\def\indep{\perp\!\!\!\perp}
+
+\newcommand{\makeHeader}{\begin{center} 
+DJM \hfill Ideas for moving forward \hfill 28 August 2017
+
+
+\rule{\textwidth}{1pt}
+\end{center}
+}
+
+
+\begin{document}
+\suppressfloats
+\makeHeader
+
+
+
+\section{Background}
+
+Musical recordings
+are complex data files that describe the intensity and onset time
+for every keystroke made by the performer. Matching this data to a
+musical score, removing incorrect notes, anticipating note onsets for
+automated accompaniment, comparing diverse performances, and
+discovering the relationship between performer choice and listener
+enjoyment all require ``smoothing'' the performance data so as to find
+low-dimensional structure. Statistical
+techniques like smoothing splines presume small changes in a
+derivative. 
+But musical performances do not conform to these assumptions because tempo and
+dynamic interpretations rely on the juxtaposition of local smoothness
+with sudden changes and emphases to create listener interest. It is
+exactly the parts of a performance that are poorly described by
+statistical smoothers that render a performance
+interesting. Furthermore, many of these inflections are notated by the
+composer or are implicit in performance practice developed over
+centuries of musical expressivity. Consequently, regularization that
+incorporates domain knowledge leads to better statistical and
+empirical results~\citep{McDonald2016}. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.75\textwidth]{hattoSplines.pdf}
+  \caption{The tempo (beats/minute) of a 2003 recording attributed to Joyce
+    Hatto.}
+  \label{fig:music}
+\end{figure}
+\autoref{fig:music}
+shows (blue dots) the note-by-note tempo of a 2003 recording
+attributed to Joyce Hatto. Splines with
+equally spaced knots (orange/dotted) are too smooth, and choosing locations
+to duplicate knots manually (red/dashed)
+to coincide with musical phrase endings works better. The solid green line 
+shows a learned musical pattern from a Markov Switching
+state-space model we developed which can
+automatically learn tempo emphases (for example, near measure 40),
+where the performer plays individual notes slightly slower than the
+prevailing tempo, and automatically discover phrases
+without purposeful knot 
+duplication. Interestingly, such musical analyses can help to compare
+performances---it was discovered in 2006 that this
+particular recording was actually made in 1988 by Eugen
+Indjic~\citep{CookSapp2009}. 
+
+This application is especially fascinating since
+it allows for visual, numerical, and aural exploration of the
+effects of tuning parameter selection on inference. Working with
+Prof.\ Chris Raphael on a
+B\"{o}sendorfer CEUS reproducing piano in the IU Jacobs School
+of Music, we can capture detailed 
+measurements of key and pedal trajectories over time.  The
+information is precise enough to reproduce an accurate replica by
+artificially ``playing'' the piano just as was done during the
+original performance. The piano can also create and respond to MIDI
+data. However, statistical inferences for these data are difficult. Current
+procedures are ill-suited for parameter estimation in a 
+computationally efficient manner, as it amounts to Gaussian mixture
+learning with $K^n$ components. Existing optimization
+algorithms~\citep{Raphael2002,GhahramaniHinton2000} thus only
+approximate the global solution. 
+
+
+\section{The main idea}
+
+\begin{itemize}
+\item We want to model tempo and dynamic decisions.
+\item We want a musician to understand what the parameters mean.
+\end{itemize}
+
+
+We will use a switching state-space model as shown in
+\autoref{fig:switchss}. For now, we assume $s$ is a hidden Markov model on
+four states, denoted $S_1,\ldots,S_4$ with transition probability
+diagram given by \autoref{fig:transmat}.
+
+\begin{figure}
+\centering
+% The continuous state vector is represented by a circle.
+% "minimum size" makes sure all circles have the same size
+% independently of their contents.
+\tikzstyle{state}=[circle,
+                                    thick,
+                                    minimum size=1.2cm, draw=black]
+% The (continuous) measurement vector is represented by an orange circle.
+\tikzstyle{measurement}=[circle,
+                                                thick,
+                                                minimum size=1.2cm,
+                                                draw=orange!80,
+                                                fill=orange!25]
+                                                \tikzstyle{switch}=[rectangle,
+  thick, minimum size=1cm, draw=black]
+
+\begin{tikzpicture}[>=latex,text height=1.5ex,text depth=0.25ex]
+    % "text height" and "text depth" are required to vertically
+    % align the labels with and without indices.
+  
+  % The various elements are conveniently placed using a matrix:
+  \matrix[row sep=1cm,column sep=1cm] {
+    % First line: Switch state
+    \node (s_k-2)  {$\cdots$}; &
+    \node (s_k-1) [switch]{$s_{k-1}$}; &
+    \node (s_k)   [switch]{$s_k$};     &
+    \node (s_k+1) [switch]{$s_{k+1}$}; &
+    \node (s_k+2) {$\cdots$};
+    \\
+    % Second line: hidden continuous state
+   \node (x_k-2) {$\cdots$}; &
+   \node (x_k-1) [state] {$\mathbf{x}_{k-1}$}; &
+   \node (x_k)   [state] {$\mathbf{x}_k$};     &
+   \node (x_k+1) [state] {$\mathbf{x}_{k+1}$}; &
+   \node (x_k+2) {$\cdots$};
+   \\
+   % Third line: Measurement
+   \node (y_k-2) {$\cdots$}; &        
+   \node (y_k-1) [measurement] {$\mathbf{y}_{k-1}$}; &
+   \node (y_k)   [measurement] {$\mathbf{y}_k$};     &
+   \node (y_k+1) [measurement] {$\mathbf{y}_{k+1}$}; &
+   \node (y_k+2) {$\cdots$};
+   \\
+  };
+    
+    % The diagram elements are now connected through arrows:
+    \path[->]
+        (s_k-2) edge (s_k-1)
+        (s_k-1) edge (s_k)	
+        (s_k)   edge (s_k+1)	
+        (s_k+1)   edge (s_k+2)	
+
+      (x_k-2) edge (x_k-1)
+      (x_k-1) edge (x_k)	
+      (x_k)   edge (x_k+1)	
+      (x_k+1)   edge (x_k+2)	
+      
+      (s_k-1) edge (x_k-1)
+      (s_k) edge (x_k)
+      (s_k+1)   edge (x_k+1)
+      
+      (x_k-1) edge (y_k-1)
+      (x_k) edge (y_k)
+      (x_k+1)   edge (y_k+1)
+      
+      (s_k-1) edge (x_k)
+      (s_k) edge (x_k+1)
+      (s_k+1)   edge (x_k+2)
+      
+      (s_k-1) edge[bend left] (y_k-1)
+      (s_k) edge[bend left] (y_k)
+      (s_k+1)   edge[bend left] (y_k+1)
+        ;
+\end{tikzpicture}
+
+\caption{Switching state space model. Filled objects are observed,
+  rectangles are discrete, and circles are continuous.\label{fig:switchss}}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \centering
+  \tikzstyle{switch}=[rectangle,
+  thick, minimum size=1cm, draw=black]
+  \begin{tikzpicture}[>=latex,text height=1.5ex,text depth=0.25ex]
+     \matrix[row sep=0.5cm,column sep=0.5cm] {
+       \node (S1) [switch] {$S_1$}; & \node (S2) [switch] {$S_2$}; \\
+       \node (S4) [switch] {$S_4$}; & \node (S3) [switch] {$S_3$}; \\
+     };
+     \path[->]
+     (S1) edge [bend right] (S4)
+     (S1) edge (S2)
+     (S2) edge (S3)
+     (S3) edge (S1)
+     (S4) edge [bend right] (S1);
+     \draw[->] (S1) to [out=90, in=180,looseness=4] (S1);
+     \draw[->] (S2) to [out=90, in=0,looseness=4] (S2);
+     \draw[->] (S3) to [out=270, in=0,looseness=4] (S3);
+  \end{tikzpicture}
+  \caption{Transition diagram. \label{fig:transmat}}
+\end{figure}
+
+
+Models like this can have many behaviors, but for our case, the
+general form is:
+\begin{align}
+  x_{t}&= d(s_{t},s_{t-1})+T(s_{t},s_{t-1}) x_t + R(s_{t},s_{t-1})\eta_{t} & \eta_t &\sim
+                                                      N(0,Q(s_{t},s_{t-1}))\\
+  y_t&= c(s_t) + Z(s_t) x_t + \epsilon_t & \epsilon_t &\sim N(0, G(s_t)).
+\end{align}
+In other words, the hidden markov (switch) state determines which parameter
+matrices govern the evolution of the system. 
+
+The 4 switch states correspond to 4 different behaviors for the
+performer: (1) constant tempo, (2) speeding up, (3) slowing down, and
+(4) single note stress. The hidden continuous variable ($x_t$) is
+taken to be a two component vector with the first component being the
+``ideal'' tempo and the second being the acceleration. 
+Corresponding to these configurations, the parameter
+matrices are given in \autoref{tab:parmats}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}[h!]{cc|ccc}
+  \hline\hline
+  \multicolumn{5}{c}{Transition equation}\\
+  \hline
+  \multicolumn{2}{c|}{Switch states} & \multicolumn{3}{c}{Parameter
+                                      matrices}\\
+  $s_{t}$ & $s_{t-1}$ & $d$ & $T$ & $R$ \\
+  \hline
+  $S_1$ &  $S_1$ & 0 & $\begin{pmatrix}1&0\\0&0\end{pmatrix}$ & 0\\
+  $S_2$ & $S_1$ & $\begin{pmatrix} l_t\tau_t\\ \tau_t\end{pmatrix}$ 
+                                    & $\begin{pmatrix} 1 & 0 \\ 0 &
+                                      0 \end{pmatrix}$ 
+          & $\begin{pmatrix} 0 & l_t\\ 0 & l_t \end{pmatrix}$\\
+  $S_4$ & $S_1$ & $\begin{pmatrix}0\\\varphi_t\end{pmatrix}$ 
+                                     & $\begin{pmatrix}1&0\\0&0\end{pmatrix}$
+          & $\begin{pmatrix}0&0\\0&1\end{pmatrix}$\\
+  $S_2$ & $S_2$ & 0 & $\begin{pmatrix} 1 & l_t \\ 0 &
+    1 \end{pmatrix}$ & 0\\
+  $S_3$ & $S_2$ & $\begin{pmatrix} l_t\tau_t\\ \tau_t\end{pmatrix}$ 
+                                    & $\begin{pmatrix} 1 & l_t \\ 0 &
+                                      0 \end{pmatrix}$ 
+          & $\begin{pmatrix} 0 & l_t\\ 0 & l_t \end{pmatrix}$\\
+  $S_1$ & $S_3$ & $\begin{pmatrix} \mu_t\\0\end{pmatrix}$ & 0
+          & $\begin{pmatrix} 1 & 0\\ 0 & 0 \end{pmatrix}$\\
+  $S_3$ & $S_3$ & 0& $\begin{pmatrix} 1 & l_t \\ 0 &
+    1 \end{pmatrix}$ & 0\\
+  $S_1$ &  $S_4$ & 0 & $\begin{pmatrix}1&0\\0&0\end{pmatrix}$ & 0\\
+  \hline\hline
+  \multicolumn{5}{c}{Measurement equation}\\
+  \hline
+  \multicolumn{2}{c|}{Switch states} & \multicolumn{3}{c}{Parameter
+                                      matrices}\\
+  $s_t$ && $c$ & $Z$ & $G$\\
+  \hline
+  $S_4$ & & 0 & $\begin{pmatrix} 1 & 1 \end{pmatrix}$ &
+                                                                  $\sigma^2_\epsilon$\\
+  else && 0 & $\begin{pmatrix} 1 & 0 \end{pmatrix}$ &
+                                                                  $\sigma^2_\epsilon$\\
+  \hline\hline
+\end{tabular}
+\caption{Parameter matrices of the switching state space model.\label{tab:parmats}}
+\end{table}
+Finally, 
+\[
+Q=\begin{cases}\begin{pmatrix} \sigma^2_1 &
+    0\\0&\sigma^2_4\end{pmatrix} & (s_t,\ s_{t-1})=(S_4,\ S_1)\\
+\begin{pmatrix} \sigma^2_1 &
+    0\\0&\sigma^2_2\end{pmatrix} & \textrm{else}.
+\end{cases}
+\] 
+So for any performance, we want to be able to estimate
+the following parameters: $\sigma_1^2$, $\sigma_2^2$, $\sigma^2_4$,
+$\sigma_\epsilon^2$, the probabilities of the transition matrix (there
+are 4), and vectors $\mu$, $\tau$, and $\varphi$. These last three
+will be of different lengths depending on the number of times the
+state is visited. Lastly, we have the initial state distributions
+\[
+x_1\sim\begin{cases} N\left( \begin{pmatrix}\mu_1\\0\end{pmatrix}
+  ,\ \begin{pmatrix} \sigma^2_1 & 0\\0 & 0
+  \end{pmatrix}\right) & s_1=S_1\\
+N\left( \begin{pmatrix}\mu_1\\\tau_1\end{pmatrix}
+  ,\ \begin{pmatrix} \sigma^2_1 & 0\\0 & \sigma^2_2
+  \end{pmatrix}\right) & s_1=S_3.\end{cases}
+\]
+Importantly, this is just one way to write this
+model.
+
+The \texttt{R} function
+\texttt{yupengMats} creates all of these different parameter matrices.
+
+
+\section{R documentation}
+
+The problem with estimating a model like this is that, because the
+switch states and the continuous states are both hidden, this becomes
+an NP-hard problem. In particular, there are $4^N$ possible paths
+through the switch variables, so evaluating the likelihood at all of
+them is intractable. Thus, I implemented a particular
+approximation. The Beam Search (\autoref{alg:beamsearch}), finds
+(greedily) evaluates the most likely path through the switch
+states. Another name for the algorithm is Discrete Particle Filter
+(\texttt{dpf}). Once we have those, \texttt{getLogLike} returns the
+negative 
+loglikelihood of the data associated with that path. So for any
+configuration of parameters, we would form the matrices
+(\texttt{yupengMats}) then find the best path (\texttt{dpf}) then
+evaluate the likelihood of that path (\texttt{getLogLike}). We can
+then optimize over parameters using any variety of numerical
+optimization technique. However, when I have tried this, I always get
+infinite likelihood.
+
+For this model, the dpf is more easily specified if we make the
+measurement equation depend only on the current state and not the
+previous state. For this reason, the code uses 16 states rather than
+4. One can always change a Markov model in this way.
+
+\begin{algorithm}[t!]
+  \caption{Beam search\label{alg:beamsearch}}
+  \begin{algorithmic}[1]
+  \STATE {\bfseries Input:}
+  Initial parameters of the matrices. Integer beam width $B$.
+  \FOR{$i=1$ {\bfseries to} $N$} 
+  \STATE (\texttt{dpf} performs 1-step of the following);
+  \STATE For each current path, calculate the 1-step likelihood for
+  moving to each potential switch (\texttt{kf1step})\;
+  \STATE Multiply the likelihood by the probability of transitioning
+  to that switch state\;
+  \STATE Multiply by the previous path weights $w$\;
+  \STATE If $\norm{w}_0>B$, resample the weights\;
+  (\texttt{resampleSubOptimal}) to get $B$ non-zero weights which
+  add to 1.\;
+  \STATE Keep only those paths corresponding to the non-zero weights\;
+  \ENDFOR
+  \STATE Return $B$ paths through the switch space along with their weights.\;
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Python}
+
+A friend of mine wrote a python library for switching state space
+models (\href{https://github.com/mattjj/pyslds}{mattjj/pyslds}). It
+may be easier to use this rather than the code I wrote. It is Bayesian
+rather than frequentist. If you're familiar with python, feel free to
+give it a whirl.
+
+\bibliographystyle{mybibsty}
+\bibliography{AllReferences}
+\end{document}
+

@@ -61,7 +61,7 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
     arma::uvec idx = SampleNoReplace(ties, dontneed);
     ws.elem(idx).zeros();
   }
-  ws = arma::normalise(ws,1);    //MICHAEL: Why L1 norm?
+  ws = arma::normalise(ws,1);
   return ws;
 }
 
@@ -135,7 +135,7 @@ arma::colvec resampleOptimal(arma::colvec w, int N){
   return NewW;
 }
 
-
+//Tested thoroughly already
 List kf1step(arma::mat a0, arma::mat P0, arma::mat dt,
              arma::mat ct, arma::mat Tt,
              arma::mat Zt, arma::mat HHt, arma::mat GGt, arma::mat yt) {
@@ -171,6 +171,7 @@ List kf1step(arma::mat a0, arma::mat P0, arma::mat dt,
                       Named("lik") = lik);
 }
 
+//[[Rcpp::export]]
 arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q){
   arma::uword K = Rt.n_cols;
   arma::mat Rtmp(r,q);
@@ -196,29 +197,30 @@ arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q){
 //ct: observation (yt) intercept
 //Tt: continous state slope
 //Zt: observation (yt) slope
-//HHt: estimated variance of the predicted mean of the continuous state?
+//HHt: variance of the predicted mean of the continuous state
 //GGt: variance of the observation
 //yt: observation
+//[[Rcpp::export]]
 List dpf(arma::uvec currentStates, arma::colvec w, int N,                      //MICHAEL: What are these?
          arma::mat transProbs,
          arma::mat a0, arma::mat P0,
-         arma::mat dt, arma::mat ct, arma::mat Tt, arma::mat Zt,
+         arma::mat dt, arma::mat ct, arma::mat Tt, arma::mat Zt, //Matrices stored in columns of these variables. Re turned into matrices in other functions.
          arma::mat HHt, arma::mat GGt, arma::vec yt){
   int npart = currentStates.size();
   // Rcout << "npart = " << npart << std::endl;
-  int m = a0.n_rows;
+  int m = a0.n_rows;                            //dimension of each particle (the continuous part)
   // Rcout << "a0cols = " << a0.n_cols << std::endl;
-  int K = dt.n_cols;
+  int K = dt.n_cols;                            //number of possible discrete states
   // Rcout << "K = " << K << std::endl;
   int mm = m*m;
   arma::cube a1(m, K, npart);
-  arma::cube P1(mm, K, npart);
+  arma::cube P1(mm, K, npart);                   
   arma::mat lik(npart, K);
   arma::mat a11(m, K);
   arma::mat P11(mm, K);
   // Rcout << "finished preallocation" << std::endl;
   for(int part=0; part < npart; part++){
-    for(int k=0;  k < K; k++){
+    for(int k=0;  k < K; k++){   //both loops together have effect of for each particle
       List kfout = kf1step(a0.col(part), P0.col(part), dt.col(k), ct.col(k),
                                        Tt.col(k), Zt.col(k), HHt.col(k), GGt.col(k),
                                        yt);
@@ -240,7 +242,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,                      /
   // Rcout << "finished dpf loop" << std::endl;
   // arma::mat blah = transProbs.rows(currentStates);
   // Rcout << "transProbs = " << std::endl << blah << std::endl;
-  lik %= transProbs.rows(currentStates);
+  lik %= transProbs.rows(currentStates);                          //Possibly want columns here?
   lik.each_col() %= w;
   w = arma::vectorise(lik);
   w = arma::normalise(w,1);
@@ -266,7 +268,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,                      /
         // Rcout << "k = " << std::endl << k << std::endl;
         // Rcout << "part = " << std::endl << part << std::endl;
         newstates(i) = k;
-        oldstates(i) = part;
+        oldstates(i) = part;                                    //Shouldn't this be 'currentStates(part)'
         arma::mat a1tmp = a1.subcube(0,k,part,m-1,k,part);
         arma::mat P1tmp = P1.subcube(0,k,part,mm-1,k,part);
         // Rcout << "a1tmp = " << std::endl << a1tmp << std::endl;
@@ -349,7 +351,7 @@ double getloglike(List pmats, arma::uvec path, arma::mat y){
 
 // [[Rcpp::export]]
 List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec mus,
-                arma::vec sig2eta, arma::vec transprobs){
+                arma::vec sig2eta, arma::vec transprobs){ //confirm that t's stay in same order for each matrix
   // need to deal with the sections
   // in each section, we have:
   //   3 state means (tempo, accel, stress), 3 state variances (same), 1 obs variance
