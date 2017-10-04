@@ -538,7 +538,7 @@ List beamSearch(arma::mat a0, arma::mat P0, arma::vec w0,
 
 /***R
 # nstates = 2
-npart = 8
+#npart = 8
 # N = 35
 # n = 100
 # y = matrix(1:3/10)
