@@ -400,8 +400,8 @@ List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec m
   Rt.tube(0,5) += 1;
   Rt.tube(3,1,3,2) += 1;
   Rt.tube(3,4) += 1;
-  Rt.tube(1,1) = lt;
-  Rt.tube(1,4) = lt;
+  Rt.tube(3,1) = lt;
+  Rt.tube(3,4) = lt;
   // Rcout << "Rt done" << std::endl;
   arma::cube Qt(mm, nstates, 1, arma::fill::zeros);
   Qt.tube(0,0,0,7) += sig2eta(0);
