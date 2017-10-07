@@ -349,6 +349,9 @@ double getloglike(List pmats, arma::uvec path, arma::mat y){
 }
     
 
+    
+//mus(0) = mu1, mus(1) = B section tempo, mus(2) = taot, mus(3) = phit
+    
 // [[Rcpp::export]]
 List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec mus,
                 arma::vec sig2eta, arma::vec transprobs){ //confirm that t's stay in same order for each matrix
@@ -364,7 +367,7 @@ List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec m
   int mm = m*m;
   int n = lt.n_elem;
   arma::mat a0(m, nstates, arma::fill::zeros);
-  a0(1) += mus(0);
+  a0(0) += mus(0);
   arma::mat P0(mm, nstates, arma::fill::zeros);
   P0.row(0) += 1;
   P0.row(mm-1) += 1;
