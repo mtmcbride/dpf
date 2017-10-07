@@ -369,8 +369,7 @@ List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec m
   arma::mat a0(m, nstates, arma::fill::zeros);
   a0(0) += mus(0);
   arma::mat P0(mm, nstates, arma::fill::zeros);
-  P0.row(0) += 1;
-  P0.row(mm-1) += 1;
+  P0.row(0) += sig2eta(0);
   arma::cube dt(m, nstates, n, arma::fill::zeros);
   dt.tube(0,1) = lt*mus(2);
   dt.tube(0,4) = lt*mus(2);
