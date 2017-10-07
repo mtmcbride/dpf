@@ -69,3 +69,15 @@ toOptimize <- function(pvec, lt, temposwitch, y, w0, Npart){
 
 testy = optim(c(1, 1, 1, 1, 1, 1, 1, 1, 0.25, 0.25, 0.25, 0.25), fn = toOptimize, lt = lt, 
               temposwitch = temposwitch, y = y, w0 = w0, Npart = npart, method = 'SANN')
+
+
+########################################################
+n = 100
+temposwitch = double(n)
+temposwitch[floor(n/2):floor(3*n/4)] = 1
+lt = rep(2, n)
+sig2eps = 3
+mus = c(4, 5, 6, 7)
+sig2eta = c(8, 9, 10)
+transProbs = c(.8,.1,.5,.4)
+testmats = yupengMats(lt, temposwitch, sig2eps, mus, sig2eta, transProbs)
