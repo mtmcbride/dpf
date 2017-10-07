@@ -387,10 +387,10 @@ List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec m
   Tt.tube(0,0,0,4) += 1;
   Tt.tube(0,6,0,7) += 1;
   Tt.tube(3,0) += 1;
-  Tt.tube(3,2,3,3) += 1;
-  Tt.tube(3,6,3,7) += 1;
-  Tt.tube(2,3) = lt;
-  Tt.tube(2,6) = lt; 
+  Tt.tube(3,6) += 1;
+  Tt.tube(2,4) = lt;
+  Tt.tube(2,6) = lt;
+  Tt.tube(2,0) = lt;
   // Rcout << "Tt done" << std::endl;
   arma::cube Zt(m, nstates, 1, arma::fill::zeros);
   Zt.tube(0,0,0,7) += 1;
