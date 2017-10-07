@@ -242,7 +242,7 @@ List dpf(arma::uvec currentStates, arma::colvec w, int N,                      /
   // Rcout << "finished dpf loop" << std::endl;
   // arma::mat blah = transProbs.rows(currentStates);
   // Rcout << "transProbs = " << std::endl << blah << std::endl;
-  lik %= transProbs.rows(currentStates);                          //Possibly want columns here?
+  lik %= transProbs.rows(currentStates);
   lik.each_col() %= w;
   w = arma::vectorise(lik);
   w = arma::normalise(w,1);
