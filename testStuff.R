@@ -67,6 +67,7 @@ toOptimize <- function(pvec, lt, temposwitch, y, w0, Npart){
     return(negllike)
 }
 
+w0[2:4] = 0 #Michael's line
 testy = optim(c(1, 1, 1, 1, 1, 1, 1, 1, 0.25, 0.25, 0.25, 0.25), fn = toOptimize, lt = lt, 
               temposwitch = temposwitch, y = y, w0 = w0, Npart = npart, method = 'SANN')
 
