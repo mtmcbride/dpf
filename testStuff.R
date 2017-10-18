@@ -71,6 +71,53 @@ w0[2:4] = 0 #Michael's line
 testy = optim(c(0, 25, 25, 1, 1, 1, 1, 1, 0.25, 0.25, 0.25, 0.25), fn = toOptimize, lt = lt, 
               temposwitch = temposwitch, y = y, w0 = w0, Npart = npart, method = 'SANN')
 
+getPath <- function(pvec, lt, temposwitch, y, w0, Npart){
+    sig2eps = exp(pvec[1])
+    mus = pvec[2:5]
+    sig2etas = exp(pvec[6:8])
+    transprobs = logistic(pvec[9:12])
+    transprobs[2] = toab(transprobs[2], 0, 1-transprobs[1])
+    pmats = yupengMats(lt, temposwitch, sig2eps, mus, sig2etas, transprobs)
+    S = beamSearch(pmats$a0, pmats$P0, w0, pmats$dt, pmats$ct, pmats$Tt, pmats$Zt,
+                   pmats$Rt, pmats$Qt, pmats$GGt, y, pmats$transMat, Npart)
+    if(S$LastStep < ncol(y)) return(Inf)
+    best = S$paths[which.max(S$weights),]
+    ps = pathStuff(pmats, best, y)
+    return(list(xpath = ps, spath = best))
+}
+
+getPmats <- function(pvec, lt, temposwitch, y, w0, Npart){
+    sig2eps = exp(pvec[1])
+    mus = pvec[2:5]
+    sig2etas = exp(pvec[6:8])
+    transprobs = logistic(pvec[9:12])
+    transprobs[2] = toab(transprobs[2], 0, 1-transprobs[1])
+    pmats = yupengMats(lt, temposwitch, sig2eps, mus, sig2etas, transprobs)
+    return(pmats)
+}
+
+paths = getPath(testy$par, lt, temposwitch, y, w0, npart)
+plot(as.vector(y) ~ c(1:n), pch = 19, 
+     main = "the dots are values of y, the line is the first parameter of the continuous state",
+     ylab = 'tempo', xlab = 'time')
+lines(as.vector(paths$xpath) ~ c(1:n))
+plot(as.vector(paths$spath) ~ c(1:n),
+     main = 'discrete states over time',
+     xlab = 'time', ylab = 'state', pch = 19)
+
+########################################################
+y[50:75] = matrix(rnorm(26))
+testy = optim(c(0, 25, 0, 1, 1, 1, 1, 1, 0.25, 0.25, 0.25, 0.25), fn = toOptimize, lt = lt, 
+              temposwitch = temposwitch, y = y, w0 = w0, Npart = npart, method = 'SANN')
+paths = getPath(testy$par, lt, temposwitch, y, w0, npart)
+mats = getPmats(testy$par, lt, temposwitch, y, w0, npart)
+plot(as.vector(y) ~ c(1:n), pch = 19, 
+     main = "the dots are values of y, the line is the first parameter of the continuous state",
+     ylab = 'tempo', xlab = 'time')
+lines(as.vector(paths$xpath) ~ c(1:n))
+plot(as.vector(paths$spath) ~ c(1:n),
+     main = 'discrete states over time',
+     xlab = 'time', ylab = 'state', pch = 19)
 
 ########################################################
 n = 100

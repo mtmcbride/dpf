@@ -2,30 +2,34 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 resampleSubOptimal <- function(w, N) {
-    .Call('dpf_resampleSubOptimal', PACKAGE = 'dpf', w, N)
+    .Call('_dpf_resampleSubOptimal', PACKAGE = 'dpf', w, N)
 }
 
 resampleOptimal <- function(w, N) {
-    .Call('dpf_resampleOptimal', PACKAGE = 'dpf', w, N)
+    .Call('_dpf_resampleOptimal', PACKAGE = 'dpf', w, N)
 }
 
 HHcreate <- function(Rt, Qt, r, q) {
-    .Call('dpf_HHcreate', PACKAGE = 'dpf', Rt, Qt, r, q)
+    .Call('_dpf_HHcreate', PACKAGE = 'dpf', Rt, Qt, r, q)
 }
 
 dpf <- function(currentStates, w, N, transProbs, a0, P0, dt, ct, Tt, Zt, HHt, GGt, yt) {
-    .Call('dpf_dpf', PACKAGE = 'dpf', currentStates, w, N, transProbs, a0, P0, dt, ct, Tt, Zt, HHt, GGt, yt)
+    .Call('_dpf_dpf', PACKAGE = 'dpf', currentStates, w, N, transProbs, a0, P0, dt, ct, Tt, Zt, HHt, GGt, yt)
 }
 
 getloglike <- function(pmats, path, y) {
-    .Call('dpf_getloglike', PACKAGE = 'dpf', pmats, path, y)
+    .Call('_dpf_getloglike', PACKAGE = 'dpf', pmats, path, y)
 }
 
 yupengMats <- function(lt, temposwitch, sig2eps, mus, sig2eta, transprobs) {
-    .Call('dpf_yupengMats', PACKAGE = 'dpf', lt, temposwitch, sig2eps, mus, sig2eta, transprobs)
+    .Call('_dpf_yupengMats', PACKAGE = 'dpf', lt, temposwitch, sig2eps, mus, sig2eta, transprobs)
 }
 
 beamSearch <- function(a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, N) {
-    .Call('dpf_beamSearch', PACKAGE = 'dpf', a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, N)
+    .Call('_dpf_beamSearch', PACKAGE = 'dpf', a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, N)
+}
+
+pathStuff <- function(pmats, path, y) {
+    .Call('_dpf_pathStuff', PACKAGE = 'dpf', pmats, path, y)
 }
 

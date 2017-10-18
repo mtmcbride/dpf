@@ -537,6 +537,70 @@ List beamSearch(arma::mat a0, arma::mat P0, arma::vec w0,
                       Named("LastStep") = iter++);
 }
 
+// [[Rcpp::export]]
+arma::colvec pathStuff(List pmats, arma::uvec path, arma::mat y){
+    arma::mat a0 = pmats["a0"];
+    arma::mat P0 = pmats["P0"];
+    arma::cube dt = pmats["dt"];
+    arma::cube ct = pmats["ct"];
+    arma::cube Tt = pmats["Tt"];
+    arma::cube Zt = pmats["Zt"];
+    arma::cube Rt = pmats["Rt"];
+    arma::cube Qt = pmats["Qt"];
+    arma::cube GGt = pmats["GGt"];
+    
+    arma::uword n = y.n_cols;
+    arma::uword m = a0.n_rows;
+    arma::uword mm = m*m;
+    arma::uword d = y.n_rows;
+    arma::uword dm = d*m;
+    arma::uword dd = d*d;
+    
+    arma::uword dtvar = dt.n_slices > 1;
+    arma::uword ctvar = ct.n_slices > 1;
+    arma::uword Ttvar = Tt.n_slices > 1;
+    arma::uword Ztvar = Zt.n_slices > 1;
+    arma::uword Rtvar = Rt.n_slices > 1;
+    arma::uword Qtvar = Qt.n_slices > 1;
+    arma::uword GGtvar = GGt.n_slices > 1;
+    arma::mat HHt(m,m);
+    arma::mat R(mm,1);
+    arma::mat Q(mm,1);
+    
+    arma::mat aa0 = a0.col(0);
+    arma::mat PP0 = reshape(P0.col(0), m, m);
+    
+    double llik = 0;
+    
+    arma::colvec means = arma::zeros<arma::colvec>(n);
+    
+    for(arma::uword iter=0; iter<n; iter++){
+        // Rcout << "iter = " << iter << std::endl;
+        // Rcout << "a0 size = " << a0.size() << std::endl;
+        arma::uword s = path(iter);
+        if(iter==0 || Rtvar || Qtvar){ 
+            R = Rt.subcube(0,s,iter*Rtvar,arma::size(mm,1,1));
+            Q = Qt.subcube(0,s,iter*Qtvar,arma::size(mm,1,1));
+            R.reshape(m,m);
+            Q.reshape(m,m);
+            HHt = R * Q * R.t();
+        }
+        Rcout << dt.subcube(0,s,iter*dtvar,arma::size(m,1,1)) << std::endl;
+        List step = kf1step(aa0, PP0, dt.subcube(0,s,iter*dtvar,arma::size(m,1,1)),
+                            ct.subcube(0,s,iter*ctvar,arma::size(d,1,1)), 
+                            Tt.subcube(0,s,iter*Ttvar,arma::size(mm,1,1)),
+                            Zt.subcube(0,s,iter*Ztvar,arma::size(dm,1,1)), 
+                            HHt, GGt.subcube(0,s,iter*GGtvar,arma::size(dd,1,1)), 
+                            y.col(iter));
+        means(iter) = aa0(0,0);
+        arma::mat aa0 = step["a1"];
+        arma::mat PP0 = step["P1"];
+        double liktmp = step["lik"];
+        llik -= log(liktmp);
+    }
+    return means;
+}
+
 // You can include R code blocks in C++ files processed with sourceCpp
 // (useful for testing and development). The R code will be automatically
 // run after the compilation.

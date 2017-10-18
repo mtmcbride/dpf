@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // resampleSubOptimal
 arma::vec resampleSubOptimal(arma::vec w, int N);
-RcppExport SEXP dpf_resampleSubOptimal(SEXP wSEXP, SEXP NSEXP) {
+RcppExport SEXP _dpf_resampleSubOptimal(SEXP wSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // resampleOptimal
 arma::colvec resampleOptimal(arma::colvec w, int N);
-RcppExport SEXP dpf_resampleOptimal(SEXP wSEXP, SEXP NSEXP) {
+RcppExport SEXP _dpf_resampleOptimal(SEXP wSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // HHcreate
 arma::mat HHcreate(arma::mat Rt, arma::mat Qt, int r, int q);
-RcppExport SEXP dpf_HHcreate(SEXP RtSEXP, SEXP QtSEXP, SEXP rSEXP, SEXP qSEXP) {
+RcppExport SEXP _dpf_HHcreate(SEXP RtSEXP, SEXP QtSEXP, SEXP rSEXP, SEXP qSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -46,7 +46,7 @@ END_RCPP
 }
 // dpf
 List dpf(arma::uvec currentStates, arma::colvec w, int N, arma::mat transProbs, arma::mat a0, arma::mat P0, arma::mat dt, arma::mat ct, arma::mat Tt, arma::mat Zt, arma::mat HHt, arma::mat GGt, arma::vec yt);
-RcppExport SEXP dpf_dpf(SEXP currentStatesSEXP, SEXP wSEXP, SEXP NSEXP, SEXP transProbsSEXP, SEXP a0SEXP, SEXP P0SEXP, SEXP dtSEXP, SEXP ctSEXP, SEXP TtSEXP, SEXP ZtSEXP, SEXP HHtSEXP, SEXP GGtSEXP, SEXP ytSEXP) {
+RcppExport SEXP _dpf_dpf(SEXP currentStatesSEXP, SEXP wSEXP, SEXP NSEXP, SEXP transProbsSEXP, SEXP a0SEXP, SEXP P0SEXP, SEXP dtSEXP, SEXP ctSEXP, SEXP TtSEXP, SEXP ZtSEXP, SEXP HHtSEXP, SEXP GGtSEXP, SEXP ytSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -69,7 +69,7 @@ END_RCPP
 }
 // getloglike
 double getloglike(List pmats, arma::uvec path, arma::mat y);
-RcppExport SEXP dpf_getloglike(SEXP pmatsSEXP, SEXP pathSEXP, SEXP ySEXP) {
+RcppExport SEXP _dpf_getloglike(SEXP pmatsSEXP, SEXP pathSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -82,7 +82,7 @@ END_RCPP
 }
 // yupengMats
 List yupengMats(arma::vec lt, arma::vec temposwitch, double sig2eps, arma::vec mus, arma::vec sig2eta, arma::vec transprobs);
-RcppExport SEXP dpf_yupengMats(SEXP ltSEXP, SEXP temposwitchSEXP, SEXP sig2epsSEXP, SEXP musSEXP, SEXP sig2etaSEXP, SEXP transprobsSEXP) {
+RcppExport SEXP _dpf_yupengMats(SEXP ltSEXP, SEXP temposwitchSEXP, SEXP sig2epsSEXP, SEXP musSEXP, SEXP sig2etaSEXP, SEXP transprobsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -98,7 +98,7 @@ END_RCPP
 }
 // beamSearch
 List beamSearch(arma::mat a0, arma::mat P0, arma::vec w0, arma::cube dt, arma::cube ct, arma::cube Tt, arma::cube Zt, arma::cube Rt, arma::cube Qt, arma::cube GGt, arma::mat yt, arma::mat transProbs, int N);
-RcppExport SEXP dpf_beamSearch(SEXP a0SEXP, SEXP P0SEXP, SEXP w0SEXP, SEXP dtSEXP, SEXP ctSEXP, SEXP TtSEXP, SEXP ZtSEXP, SEXP RtSEXP, SEXP QtSEXP, SEXP GGtSEXP, SEXP ytSEXP, SEXP transProbsSEXP, SEXP NSEXP) {
+RcppExport SEXP _dpf_beamSearch(SEXP a0SEXP, SEXP P0SEXP, SEXP w0SEXP, SEXP dtSEXP, SEXP ctSEXP, SEXP TtSEXP, SEXP ZtSEXP, SEXP RtSEXP, SEXP QtSEXP, SEXP GGtSEXP, SEXP ytSEXP, SEXP transProbsSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -118,4 +118,34 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(beamSearch(a0, P0, w0, dt, ct, Tt, Zt, Rt, Qt, GGt, yt, transProbs, N));
     return rcpp_result_gen;
 END_RCPP
+}
+// pathStuff
+arma::colvec pathStuff(List pmats, arma::uvec path, arma::mat y);
+RcppExport SEXP _dpf_pathStuff(SEXP pmatsSEXP, SEXP pathSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type pmats(pmatsSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type path(pathSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(pathStuff(pmats, path, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_dpf_resampleSubOptimal", (DL_FUNC) &_dpf_resampleSubOptimal, 2},
+    {"_dpf_resampleOptimal", (DL_FUNC) &_dpf_resampleOptimal, 2},
+    {"_dpf_HHcreate", (DL_FUNC) &_dpf_HHcreate, 4},
+    {"_dpf_dpf", (DL_FUNC) &_dpf_dpf, 13},
+    {"_dpf_getloglike", (DL_FUNC) &_dpf_getloglike, 3},
+    {"_dpf_yupengMats", (DL_FUNC) &_dpf_yupengMats, 6},
+    {"_dpf_beamSearch", (DL_FUNC) &_dpf_beamSearch, 13},
+    {"_dpf_pathStuff", (DL_FUNC) &_dpf_pathStuff, 3},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_dpf(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
