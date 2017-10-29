@@ -1,4 +1,5 @@
 library(dpf)
+library(pushoverr)
 nstates = 2
 npart = 8
 N = 35
@@ -48,9 +49,22 @@ toOptimize <- function(pvec, lt, temposwitch, y, w0, Npart){
 w0[2:4] = 0 #Michael's line
 initParams = c(0, 25, 25, 1, 1, 1, 1, 1, 0.25, 0.25, 0.25, 0.25)
 badOnes = 0
-for(i in 1:1000){
-    testy = optim(initParams, fn = toOptimize, lt = lt, temposwitch = temposwitch, 
-                  y = y, w0 = w0, Npart = npart, method = 'SANN')
-    badOnes = badOnes + all(testy$par == initParams)
-}
-print(badOnes)
+tryCatch({
+    for(i in 1:1000){
+        print(i)
+        testy = optim(initParams, fn = toOptimize, lt = lt, temposwitch = temposwitch, 
+                      y = y, w0 = w0, Npart = npart, method = 'SANN')
+        badOnes = badOnes + all(testy$par == initParams)
+    }
+    
+    p = badOnes/1000
+    se = sqrt(p*(1 - p)/(n - 1))
+    CI = c(p - qt(0.975, 999)*se, p + qt(0.975, 999))
+    print(p)
+    print(CI)
+    pushover(message = paste("Success!", badOnes/1000, "is the fraction that failed"),
+             user = "u1i3udnicjcosuaxx6615zhpivu73j", app = "arzw55n8kkf18voqamjyer7vrk1dwq")
+}, error = function(error_condition){
+    pushover(message = paste("loop ran", i, "times.", badOnes, "ones were bad.", error_condition), 
+             user = "u1i3udnicjcosuaxx6615zhpivu73j", app = "arzw55n8kkf18voqamjyer7vrk1dwq")
+})

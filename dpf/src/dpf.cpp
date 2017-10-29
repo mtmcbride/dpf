@@ -35,6 +35,7 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
   arma::vec nzz = arma::nonzeros(ws);
   arma::uword nz = nzz.n_elem;
   if(M <= N || nz <= N){
+    Rcout << "HI: " << arma::accu(ws != 0) << std::endl;
     return ws;
   }
   
@@ -62,6 +63,7 @@ arma::vec resampleSubOptimal(arma::vec w, int N){
     ws.elem(idx).zeros();
   }
   ws = arma::normalise(ws,1);
+  Rcout << "HO: " << arma::accu(ws != 0) << std::endl;
   return ws;
 }
 
